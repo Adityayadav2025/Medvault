@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MedVault - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif;}
+    body{background:#f2f6fc;color:#1b2e5a;min-height:100vh;display:flex;flex-direction:column;}
+    header{background:white;padding:20px 40px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+    .logo{display:flex;align-items:center;font-weight:700;font-size:1.4rem;}
+    .logo img{height:40px;margin-right:10px;}
+    .logout-btn{background:linear-gradient(to right,#6e8efb,#a777e3);color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:1rem;transition:0.3s;}
+    .logout-btn:hover{opacity:0.9;}
+    main{flex-grow:1;padding:40px 20px;max-width:1000px;margin:0 auto;}
+    section{background:white;border-radius:20px;padding:30px;box-shadow:0 10px 25px rgba(0,0,0,0.05);margin-bottom:40px;}
+    .file-list{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
+    .file-card{background:white;border-radius:15px;padding:20px;box-shadow:0 8px 20px rgba(0,0,0,0.05);text-align:center;}
+    .horizontal-timer-container{margin:30px auto;max-width:600px;text-align:center;}
+    .horizontal-bar-bg{width:100%;height:30px;background:#e0e0e0;border-radius:20px;overflow:hidden;position:relative;}
+    .horizontal-bar-progress{height:100%;width:100%;background:linear-gradient(to right,#6e8efb,#a777e3);transition:width 1s linear;animation:pulse 2s infinite;}
+    .horizontal-timer-text{margin-top:10px;font-weight:600;font-size:1.2rem;color:#1b2e5a;}
+    @keyframes pulse{0%{opacity:1;}50%{opacity:0.8;}100%{opacity:1;}}
+    .doctor-card{display:flex;align-items:center;background:#f9f9ff;padding:15px;border-radius:15px;margin-bottom:20px;box-shadow:0 8px 20px rgba(0,0,0,0.05);}
+    .doctor-card img{width:60px;height:60px;border-radius:50%;object-fit:cover;margin-right:15px;}
+    .doctor-info{flex-grow:1;}
+    .chat-window{display:none;position:fixed;bottom:20px;right:20px;width:320px;background:white;border-radius:15px;box-shadow:0 10px 25px rgba(0,0,0,0.2);z-index:1000;flex-direction:column;overflow:hidden;}
+    .chat-header{background:linear-gradient(to right,#6e8efb,#a777e3);color:white;padding:10px 15px;font-weight:600;display:flex;justify-content:space-between;align-items:center;}
+    .close-btn{background:transparent;border:none;color:white;font-size:1.2rem;cursor:pointer;}
+    .chat-messages{flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:10px;background:#f2f6fc;}
+    .msg{max-width:80%;padding:8px 12px;border-radius:15px;font-size:0.9rem;}
+    .msg.user{align-self:flex-end;background:#d0e6ff;}
+    .msg.doctor{align-self:flex-start;background:#e7e7e7;}
+    .chat-input{display:flex;border-top:1px solid #ccc;}
+    .chat-input input{flex:1;border:none;padding:10px;font-size:1rem;outline:none;}
+    .chat-input button{background:#6e8efb;color:white;border:none;padding:10px 20px;cursor:pointer;font-weight:600;}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="WhatsApp Image 2025-06-27 at 7.30.59 PM.jpeg" alt="Logo">
+      MedVault
+    </div>
+    <button class="logout-btn" onclick="alert('Logged out!')">Logout</button>
+  </header>
+
+  <main>
+    <section>
+      <h2>Regular Eye Checkup Countdown</h2>
+      <div class="horizontal-timer-container">
+        <div class="horizontal-bar-bg">
+          <div class="horizontal-bar-progress" id="horizontalCountdown"></div>
+        </div>
+        <div class="horizontal-timer-text" id="horizontalTimerText"></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Upload Your Medical Report</h2>
+      <input type="file" id="fileInput">
+      <button onclick="uploadFile()">Upload</button>
+      <div id="uploadProgress" style="margin-top:10px;color:#555;"></div>
+    </section>
+
+    <section>
+      <h2>Your Uploaded Reports</h2>
+      <div class="file-list" id="fileList">
+        <p style="grid-column:1/-1;text-align:center;color:#888;">No reports uploaded yet.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Your Health Trends</h2>
+      <div style="margin-bottom:40px;"><h3>Blood Pressure</h3><canvas id="bpChart" height="100"></canvas></div>
+      <div style="margin-bottom:40px;"><h3>BMI</h3><canvas id="bmiChart" height="100"></canvas></div>
+      <div><h3>Cholesterol</h3><canvas id="cholChart" height="100"></canvas></div>
+    </section>
+
+    <section>
+      <h2>Chat with Doctors</h2>
+      <div class="doctor-card"><img src="https://randomuser.me/api/portraits/men/10.jpg"><div class="doctor-info"><h4>Dr. Rajesh Sharma</h4><p>Cardiologist</p></div><button onclick="openChat('Dr. Rajesh Sharma')">Chat</button></div>
+      <div class="doctor-card"><img src="https://randomuser.me/api/portraits/women/15.jpg"><div class="doctor-info"><h4>Dr. Priya Mehta</h4><p>General Physician</p></div><button onclick="openChat('Dr. Priya Mehta')">Chat</button></div>
+      <div class="doctor-card"><img src="https://randomuser.me/api/portraits/men/20.jpg"><div class="doctor-info"><h4>Dr. Arvind Patel</h4><p>Ophthalmologist</p></div><button onclick="openChat('Dr. Arvind Patel')">Chat</button></div>
+    </section>
+  </main>
+
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header"><span id="chatDoctorName">Chat</span><button class="close-btn" onclick="closeChat()">&#10006;</button></div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input"><input type="text" id="chatInput" placeholder="Type your message..."/><button onclick="sendMessage()">Send</button></div>
+  </div>
+
+  <script>
+    // Horizontal Countdown Timer
+    let totalSec=12*24*3600;
+    function updateHorizontalCountdown(){
+      totalSec--;
+      const days=Math.floor(totalSec/86400),hours=Math.floor((totalSec%86400)/3600),seconds=totalSec%60,percent=totalSec/(12*24*3600)*100;
+      document.getElementById("horizontalCountdown").style.width=percent+"%";
+      document.getElementById("horizontalTimerText").textContent=`${days}d ${hours}h ${seconds}s`;
+      if(totalSec<=0)clearInterval(horizTimer);
+    }
+    updateHorizontalCountdown();const horizTimer=setInterval(updateHorizontalCountdown,1000);
+
+    // Upload File
+    function uploadFile(){
+      const fileInput=document.getElementById("fileInput"),file=fileInput.files[0],progressEl=document.getElementById("uploadProgress"),fileListEl=document.getElementById("fileList");
+      if(!file){alert("Please select a file first!");return;}
+      progressEl.innerText="Upload: 0%";let progress=0;
+      const interval=setInterval(()=>{progress+=10;progressEl.innerText=`Upload: ${progress}%`;if(progress>=100){clearInterval(interval);setTimeout(()=>{progressEl.innerText="";if(fileListEl.children[0]?.tagName==='P')fileListEl.innerHTML="";const fileCard=document.createElement("div");fileCard.className="file-card";fileCard.innerHTML=`<h4>${file.name}</h4><p>Uploaded: ${new Date().toLocaleString()}</p><p><a href="https://file-examples.com/storage/fe3d70ad6a1d11f59fa22d6/2017/10/file-sample_150kB.pdf" target="_blank">View Report</a></p>`;fileListEl.appendChild(fileCard);},300);}},300);
+    }
+
+    // Chat functions
+    let activeDoctor="";function openChat(name){activeDoctor=name;document.getElementById("chatDoctorName").innerText=`Chat with ${name}`;document.getElementById("chatMessages").innerHTML="";document.getElementById("chatWindow").style.display="flex";}
+    function closeChat(){document.getElementById("chatWindow").style.display="none";}
+    function sendMessage(){const input=document.getElementById("chatInput"),msgText=input.value.trim();if(!msgText)return;const messages=document.getElementById("chatMessages"),userMsg=document.createElement("div");userMsg.className="msg user";userMsg.innerText=msgText;messages.appendChild(userMsg);messages.scrollTop=messages.scrollHeight;input.value="";setTimeout(()=>{const responses=["Please follow your prescription.","I'll review your reports.","Stay hydrated!"],doctorMsg=document.createElement("div");doctorMsg.className="msg doctor";doctorMsg.innerText=responses[Math.floor(Math.random()*responses.length)];messages.appendChild(doctorMsg);messages.scrollTop=messages.scrollHeight;},1000);}
+
+    // Charts
+    document.addEventListener("DOMContentLoaded",()=>{const labels=["Day -30","Day -25","Day -20","Day -15","Day -10","Day -5","Today"];
+    new Chart(document.getElementById("bpChart"),{type:'line',data:{labels,datasets:[{label:"Systolic BP",data:[125,122,128,130,126,124,123],borderColor:"#6e8efb",backgroundColor:"rgba(110,142,251,0.1)",tension:0.3,fill:true,pointRadius:4,pointHoverRadius:6}]},options:{animation:{duration:2000}}});
+    new Chart(document.getElementById("bmiChart"),{type:'line',data:{labels,datasets:[{label:"BMI",data:[24.5,24.6,24.7,24.4,24.3,24.1,24.0],borderColor:"#a777e3",backgroundColor:"rgba(167,119,227,0.1)",tension:0.3,fill:true,pointRadius:4,pointHoverRadius:6}]},options:{animation:{duration:2000}}});
+    new Chart(document.getElementById("cholChart"),{type:'line',data:{labels,datasets:[{label:"Cholesterol",data:[190,188,185,182,180,178,175],borderColor:"#00c9ff",backgroundColor:"rgba(0,201,255,0.1)",tension:0.3,fill:true,pointRadius:4,pointHoverRadius:6}]},options:{animation:{duration:2000}}});});
+  </script>
+</body>
+</html>
