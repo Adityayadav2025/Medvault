@@ -7,20 +7,39 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif;}
-    body{background:#f2f6fc;color:#1b2e5a;min-height:100vh;display:flex;flex-direction:column;}
+    body{background:#f2f6fc;color:#1b2e5a;min-height:100vh;display:flex;flex-direction:column;position: relative}
     header{background:white;padding:20px 40px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
     .logo{display:flex;align-items:center;font-weight:700;font-size:1.4rem;}
     .logo img{height:40px;margin-right:10px;}
     .logout-btn{background:linear-gradient(to right,#6e8efb,#a777e3);color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:1rem;transition:0.3s;}
     .logout-btn:hover{opacity:0.9;}
-    main{flex-grow:1;padding:40px 20px;max-width:1000px;margin:0 auto;}
+    main{flex-grow:1;padding:40px 20px;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:300px 1fr;gap:30px;}
+    .sidebar{display:flex;flex-direction:column;gap:20px;}
+    .main-content{display:flex;flex-direction:column;gap:40px;}
     section{background:white;border-radius:20px;padding:30px;box-shadow:0 10px 25px rgba(0,0,0,0.05);margin-bottom:40px;}
     .file-list{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
     .file-card{background:white;border-radius:15px;padding:20px;box-shadow:0 8px 20px rgba(0,0,0,0.05);text-align:center;}
+    .user-details{background:linear-gradient(135deg,#6e8efb,#a777e3);color:white;border-radius:20px;padding:30px;box-shadow:0 10px 25px rgba(0,0,0,0.1);}
+    .user-details h3{margin-bottom:20px;font-size:1.3rem;text-align:center;}
+    .detail-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.2);}
+    .detail-item:last-child{border-bottom:none;}
+    .detail-label{font-weight:600;font-size:0.95rem;}
+    .detail-value{font-size:1.1rem;font-weight:700;}
+    .quick-stats{background:white;border-radius:20px;padding:25px;box-shadow:0 10px 25px rgba(0,0,0,0.05);}
+    .quick-stats h3{margin-bottom:20px;color:#1b2e5a;font-size:1.2rem;text-align:center;}
+    .stat-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0f0f0;}
+    .stat-item:last-child{border-bottom:none;}
+    .stat-label{color:#666;font-size:0.9rem;}
+    .stat-value{font-weight:600;color:#1b2e5a;}
     .horizontal-timer-container{margin:30px auto;max-width:600px;text-align:center;}
     .horizontal-bar-bg{width:100%;height:30px;background:#e0e0e0;border-radius:20px;overflow:hidden;position:relative;}
     .horizontal-bar-progress{height:100%;width:100%;background:linear-gradient(to right,#6e8efb,#a777e3);transition:width 1s linear;animation:pulse 2s infinite;}
     .horizontal-timer-text{margin-top:10px;font-weight:600;font-size:1.2rem;color:#1b2e5a;}
+    @media (max-width: 768px) {
+      main{grid-template-columns:1fr;gap:20px;}
+      .sidebar{order:2;}
+      .main-content{order:1;}
+    }
     @keyframes pulse{0%{opacity:1;}50%{opacity:0.8;}100%{opacity:1;}}
     .doctor-card{display:flex;align-items:center;background:#f9f9ff;padding:15px;border-radius:15px;margin-bottom:20px;box-shadow:0 8px 20px rgba(0,0,0,0.05);}
     .doctor-card img{width:60px;height:60px;border-radius:50%;object-fit:cover;margin-right:15px;}
@@ -35,27 +54,68 @@
     .chat-input{display:flex;border-top:1px solid #ccc;}
     .chat-input input{flex:1;border:none;padding:10px;font-size:1rem;outline:none;}
     .chat-input button{background:#6e8efb;color:white;border:none;padding:10px 20px;cursor:pointer;font-weight:600;}
+    .first{text-align: center; font-size: 21px; display: flex; justify-content: center; align-items: center; flex-direction: column;}
+    .logoimg{width: 150px; height: 150px; }
+    .logoimg img{width: 100%; height: 100%;}
+    
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 </head>
 <body>
   <header>
     <div class="logo">
-      <img src="WhatsApp Image 2025-06-27 at 7.30.59 PM.jpeg" alt="Logo">
+      <div style="width:40px;height:40px;background:linear-gradient(135deg,#6e8efb,#a777e3);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;margin-right:10px;">M</div>
       MedVault
     </div>
     <button class="logout-btn" onclick="alert('Logged out!')">Logout</button>
   </header>
 
   <main>
-    <section>
-      <h2>Regular Eye Checkup Countdown</h2>
-      <div class="horizontal-timer-container">
-        <div class="horizontal-bar-bg">
-          <div class="horizontal-bar-progress" id="horizontalCountdown"></div>
+    <div class="sidebar">
+      <div class="user-details">
+        <h3>👤 User Details</h3>
+        <div class="detail-item">
+          <span class="detail-label">Height</span>
+          <span class="detail-value">5'8"</span>
         </div>
-        <div class="horizontal-timer-text" id="horizontalTimerText"></div>
+        <div class="detail-item">
+          <span class="detail-label">Weight</span>
+          <span class="detail-value">70 kg</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Blood Group</span>
+          <span class="detail-value">O+</span>
+        </div>
       </div>
+
+      <div class="quick-stats">
+        <h3>📊 Quick Stats</h3>
+        <div class="stat-item">
+          <span class="stat-label">BMI</span>
+          <span class="stat-value">24.0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Last Checkup</span>
+          <span class="stat-value">2 weeks ago</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Reports</span>
+          <span class="stat-value">3 files</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+    <section class="first">
+      <h2>Welome to MedVault</h2>
+
+        <div class="horizontal-timer-container">
+          <div hidden class="horizontal-bar-bg">
+            <div hidden class="horizontal-bar-progress" id="horizontalCountdown"></div>
+          </div>
+          <div hidden class="horizontal-timer-text" id="horizontalTimerText"></div>
+          <div class="logoimg"><img src="WhatsApp Image 2025-06-27 at 7.30.59 PM.jpeg" alt=""></div>
+        </div>
     </section>
 
     <section>
@@ -85,6 +145,7 @@
       <div class="doctor-card"><img src="https://randomuser.me/api/portraits/women/15.jpg"><div class="doctor-info"><h4>Dr. Priya Mehta</h4><p>General Physician</p></div><button onclick="openChat('Dr. Priya Mehta')">Chat</button></div>
       <div class="doctor-card"><img src="https://randomuser.me/api/portraits/men/20.jpg"><div class="doctor-info"><h4>Dr. Arvind Patel</h4><p>Ophthalmologist</p></div><button onclick="openChat('Dr. Arvind Patel')">Chat</button></div>
     </section>
+    </div>
   </main>
 
   <div class="chat-window" id="chatWindow">
