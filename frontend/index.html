@@ -7,15 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif;}
-    body {
-      height: 100vh;
-      background: linear-gradient(135deg, #dfefff, #f0f4ff);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
+    body {height: 100vh; background: linear-gradient(135deg, #dfefff, #f0f4ff); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;}
     .blob {position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; z-index: -1; animation: moveBlobs 20s infinite alternate ease-in-out;}
     .blob1 { width: 500px; height: 500px; background: #6e8efb; top: -100px; left: -150px; }
     .blob2 { width: 400px; height: 400px; background: #a777e3; bottom: -100px; right: -100px; }
@@ -28,7 +20,7 @@
     p.subtext {color: #666; font-size: 0.95rem; margin-bottom: 30px;}
     input {width: 100%; padding: 12px 15px; margin: 10px 0; border: 1px solid #ccc; border-radius: 10px; font-size: 1rem;}
     .actions {display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 20px; color: #555;}
-    button {background: linear-gradient(to right, #6e8efb, #a777e3); color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s;}
+    button {background: linear-gradient(to right, #6e8efb, #a777e3); color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 10px;}
     button:hover {opacity: 0.95;}
     .signup-link {margin-top: 15px; font-size: 0.85rem;}
     .signup-link a {color: #6e8efb; text-decoration: none;}
@@ -55,13 +47,14 @@
     </div>
 
     <button onclick="login()">→ Log In</button>
+    <button onclick="signup()">Sign Up</button>
 
     <div class="signup-link">
-      Don't have an account? <a href="#">Sign up now</a>
+      Already have an account? Just log in above!
     </div>
   </div>
 
-  <!-- Load Firebase SDKs -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
@@ -85,7 +78,22 @@
           alert("Login failed: " + error.message);
         });
     }
+
+    function signup() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          console.log("✅ Account created:", userCredential.user.email);
+          alert("Account created successfully! Redirecting to dashboard...");
+          window.location.href = "/frontend/dashboard.html";
+        })
+        .catch((error) => {
+          console.error("❌ Sign up failed:", error.message);
+          alert("Sign up failed: " + error.message);
+        });
+    }
   </script>
 </body>
 </html>
-<!-- Trigger redeploy: Updated on June 30 -->
