@@ -1,2 +1,4 @@
-/assets/*    /assets/:splat    200
-/*           /dashboard.html   200
+
+/assets/*            /assets/:splat            200
+/firebase-config.js  /firebase-config.js       200
+/*                   /dashboard.html           200
